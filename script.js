@@ -1,32 +1,192 @@
+/* ============================================
+   James Ren Portfolio - Interactions
+   Motion: Hierarchy reinforcement, interaction feedback
+   ============================================ */
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Navigation scroll effect
+    const nav = document.querySelector('.nav');
+    
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+            nav.classList.add('scrolled');
+        } else {
+            nav.classList.remove('scrolled');
+        }
+    });
+
+    // Mobile menu toggle - use nav slider
+    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+    
+    if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', () => {
+            document.querySelector(".nav-links").classList.toggle("active"); document.querySelector(".mobile-menu-btn").classList.toggle("active");
+            mobileMenuBtn.classList.toggle('active');
+        });
+    }
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const target = document.querySelector(targetId);
+            
+            if (target) {
+                // Close mobile slider if open
+                const slider = document.getElementById('nav-slider');
+                const overlay = document.getElementById('nav-slider-overlay');
+                if (slider) slider.classList.remove('active');
+                if (overlay) overlay.classList.remove('active');
+                
+                // Smooth scroll
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+
+    // Intersection Observer for scroll animations
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                
+                // Stagger animation for child elements
+                const children = entry.target.querySelectorAll('.timeline-item, .expertise-category, .stat-card, .achievement-card');
+                children.forEach((child, index) => {
+                    child.style.animationDelay = `${index * 0.1}s`;
+                });
+            }
+        });
+    }, observerOptions);
+
+    // Observe sections
+    document.querySelectorAll('.section, .timeline-item, .expertise-category, .about-stats, .achievement-cards').forEach(el => {
+        el.classList.add('fade-on-scroll');
+        observer.observe(el);
+    });
+
+    // Add visible class styles
+    const style = document.createElement('style');
+    style.textContent = `
+        .fade-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        
+        .fade-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .timeline-item, .expertise-category, .stat-card {
+            opacity: 1;
+            transform: none;
+        }
+        
+        .mobile-menu-btn.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        
+        .mobile-menu-btn.active span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .mobile-menu-btn.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Parallax effect for hero (subtle)
+    const heroSection = document.querySelector('.hero');
+    const bgLayer = document.querySelector('.bg-layer');
+    
+    if (heroSection && bgLayer) {
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const rate = scrolled * 0.3;
+            bgLayer.style.transform = `translateY(${rate}px)`;
+        });
+    }
+
+    // Button hover effects
+    document.querySelectorAll('.btn, .contact-btn').forEach(btn => {
+        btn.addEventListener('mouseenter', function(e) {
+            // Add ripple effect
+            const ripple = document.createElement('span');
+            ripple.classList.add('ripple');
+            this.appendChild(ripple);
+            
+            setTimeout(() => ripple.remove(), 600);
+        });
+    });
+
+    // Add ripple styles
+    const rippleStyle = document.createElement('style');
+    rippleStyle.textContent = `
+        .btn, .contact-btn {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(0);
+            animation: ripple-effect 0.6s linear;
+            pointer-events: none;
+        }
+        
+        @keyframes ripple-effect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(rippleStyle);
+});
+
 // ========================================
 // James Ren Portfolio - Chat Widget
-// Local AI responses - no external API needed
 // ========================================
 
 // Resume data for AI responses
 const resumeData = {
     name: "James Ren, PhD",
     title: "Enterprise Software Architect & Engineering Leader",
-    summary: "Strategic technical leader with 15+ years architecting IoT platforms at millions-of-device scale. Led platform modernization reducing costs 60% while improving performance 10x. PhD-level AI expertise (BDI multi-agent systems). Experience scaling consumer IoT to 50K+ devices, 45K+ users.",
+    summary: "Strategic technical leader with 15+ years architecting IoT platforms at millions-of-device scale. Led platform modernization reducing costs 60% while improving performance 10x. PhD-level AI expertise (BDI multi-agent systems). Experience scaling IoT to 60K+ devices.",
     
     experience: [
         {
             title: "Tech Lead / Principal Architect",
             company: "American Homes (AMH)",
             dates: "April 2025 – Present",
-            description: "Lead enterprise architecture and IoT platform strategy for smart home ecosystem supporting thousands of residential properties."
+            description: "Lead enterprise architecture and IoT platform strategy for smart home ecosystem supporting 60,000+ properties."
         },
         {
             title: "Head of Software / Chief Architect",
             company: "Shared Studios",
             dates: "July 2023 – March 2025",
-            description: "Directed software strategy and led enterprise platform modernization. Reduced team from 10 devs to 3 senior engineers using AI."
+            description: "Directed software strategy. Reduced team from 10 devs to 3 senior engineers using AI."
         },
         {
             title: "Senior Software Engineer III",
             company: "American Homes (AMH)",
             dates: "December 2021 – July 2023",
-            description: "Built Azure-based cloud-native applications and IoT integrations. Developed SVM algorithms for HVAC fault detection."
+            description: "Built Azure-based cloud-native apps. Developed SVM algorithms for HVAC fault detection."
         },
         {
             title: "Lead Software Engineer",
@@ -47,11 +207,9 @@ const resumeData = {
         "Cloud Architecture (AWS, Azure)",
         "Microservices & Event-Driven Systems",
         "Domain-Driven Design",
-        "Kubernetes & Containerization",
         "AI/ML (BDI Multi-Agent Systems)",
         "C#/.NET, Java, TypeScript, Python",
-        "MQTT, LoRaWAN, BLE",
-        "Real-Time Messaging Systems"
+        "MQTT, LoRaWAN, BLE, Zigbee, Z-Wave"
     ],
     
     education: {
@@ -61,21 +219,12 @@ const resumeData = {
         dissertation: "Market-Based Multi-Agent System for Power Balance and Restoration in Power Networks"
     },
     
-    contact: {
-        email: "rqg0717@gmail.com",
-        phone: "+1 (215) 327-7439",
-        location: "Naperville, IL",
-        github: "github.com/rqg0717",
-        linkedin: "linkedin.com/in/rqg0717"
-    },
-    
     achievements: [
-        "Scaled IoT to 50K+ devices serving 45K+ residents",
-        "Reduced 12-person team to 3 senior engineers using AI",
-        "10x performance improvement in platform modernization",
-        "Patent-pending smart home wireless node designs",
+        "Scaled IoT to 60K+ properties",
+        "Reduced team from 10 to 3 using AI",
+        "10x performance improvement",
         "PhD-level AI expertise (BDI multi-agent systems)",
-        "Built integrations with Fortune 500 companies"
+        "$2M+ annual savings from HVAC ML"
     ]
 };
 
@@ -94,14 +243,11 @@ function sendMessage(event) {
     
     if (!message) return;
     
-    // Add user message
     addMessage(message, 'user');
     input.value = '';
     
-    // Show typing indicator
     showTypingIndicator();
     
-    // Generate response
     setTimeout(() => {
         removeTypingIndicator();
         const response = generateResponse(message);
@@ -136,107 +282,75 @@ function removeTypingIndicator() {
     if (typing) typing.remove();
 }
 
-// Generate AI response based on resume
+// Generate AI response
 function generateResponse(question) {
     const q = question.toLowerCase();
     
-    // About / Summary
-    if (q.includes('about') || q.includes('who') || q.includes('tell me about') || q.includes('introduction') || q.includes('yourself')) {
+    if (q.includes('about') || q.includes('who')) {
         return resumeData.summary;
     }
     
-    // Current role / Current position
-    if (q.includes('current') || q.includes('now') || q.includes('present') || q.includes('doing')) {
-        return `James is currently working as Tech Lead / Principal Architect at American Homes (AMH) since April 2025. He leads enterprise architecture and IoT platform strategy for their smart home ecosystem.`;
+    if (q.includes('current') || q.includes('present')) {
+        return `James is currently Tech Lead / Principal Architect at American Homes (AMH), leading enterprise IoT platform strategy for 60,000+ properties.`;
     }
     
-    // Experience / Work history
-    if (q.includes('experience') || q.includes('work') || q.includes('job') || q.includes('career')) {
-        let expText = `James has 15+ years of experience. Here's his work history:\n\n`;
+    if (q.includes('experience') || q.includes('work') || q.includes('career')) {
+        let expText = `James has 15+ years of experience:\n\n`;
         resumeData.experience.forEach((exp, i) => {
             expText += `${i + 1}. <strong>${exp.title}</strong> at ${exp.company} (${exp.dates})\n   ${exp.description}\n\n`;
         });
         return expText;
     }
     
-    // Specific company
-    if (q.includes('american homes') || q.includes('amh')) {
-        return `James worked at American Homes (AMH) twice:\n\n1. <strong>Tech Lead / Principal Architect</strong> (Apr 2025 - Present): Leads enterprise IoT platform strategy for 25,000+ properties\n\n2. <strong>Senior Software Engineer III</strong> (Dec 2021 - Jul 2023): Built Azure-based cloud-native apps, developed HVAC fault detection ML algorithms saving $2M+ annually`;
+    if (q.includes('skill') || q.includes('tech') || q.includes('expertise')) {
+        return `James's key skills:\n\n• <strong>Architecture</strong>: Event-Driven, DDD, Cloud-Native, Serverless\n• <strong>Cloud</strong>: AWS (IoT Core, Lambda), Azure (Functions, AKS, IoT Hub)\n• <strong>Programming</strong>: C#/.NET, Java, TypeScript, Python, Go\n• <strong>IoT</strong>: MQTT, LoRaWAN, BLE, Zigbee, Z-Wave\n• <strong>AI/ML</strong>: BDI Multi-Agent Systems, Computer Vision, LLM`;
     }
     
-    if (q.includes('shared studios')) {
-        return `James was Head of Software / Chief Architect at Shared Studios (Jul 2023 - Mar 2025). Key achievements: Reduced team from 10 devs to 3 senior engineers using AI, led DDD architecture overhaul achieving 10x performance improvement, built AI-powered voice interfaces, and deployed to 12 global locations for McKinsey/JLL clients.`;
+    if (q.includes('education') || q.includes('degree') || q.includes('phd') || q.includes('temple')) {
+        return `James has a <strong>Ph.D. in Electrical & Computer Engineering</strong> from Temple University. His dissertation: "Market-Based Multi-Agent System for Power Balance and Restoration in Power Networks" (sponsored by ONR & NSF).`;
     }
     
-    if (q.includes('fiserv')) {
-        return `James was a Lead Software Engineer at Fiserv (Apr 2021 - Dec 2021), leading full-stack development for Card Services serving millions of daily transactions.`;
+    if (q.includes('achievement') || q.includes('accomplish')) {
+        return `Key achievements:\n\n🏆 Scaled IoT to 60K+ properties\n🏆 Reduced team from 10 to 3 using AI\n🏆 10x performance improvement\n🏆 $2M+ annual savings from HVAC ML\n🏆 PhD-level AI expertise (BDI multi-agent)`;
     }
     
-    if (q.includes('genfare')) {
-        return `James was a Lead Software Engineer at GENFARE (Jan 2019 - Apr 2021), architecting next-generation IoT fare collection systems. He resolved a 15-year serial port bug and increased wireless speed by 5x.`;
+    if (q.includes('contact') || q.includes('email') || q.includes('reach')) {
+        return `Contact James:\n\n📧 Email: rqg0717@gmail.com\n🔗 GitHub: github.com/rqg0717\n🔗 LinkedIn: linkedin.com/in/rqg0717`;
     }
     
-    // Skills
-    if (q.includes('skill') || q.includes('technology') || q.includes('tech') || q.includes('expertise') || q.includes('technologies')) {
-        return `James's key skills include:\n\n• <strong>Architecture</strong>: Event-Driven & Microservices, Domain-Driven Design, Cloud-Native, Serverless\n• <strong>Cloud</strong>: AWS (IoT Core, Lambda), Azure (Functions, AKS, IoT Hub)\n• <strong>Programming</strong>: C#/.NET, Java, TypeScript, Python, Go\n• <strong>IoT</strong>: MQTT, LoRaWAN, BLE, Zigbee, Z-Wave\n• <strong>AI/ML</strong>: BDI Multi-Agent Systems, Computer Vision, LLM integration\n\nWould you like more details on any specific area?`;
+    if (q.includes('iot') || q.includes('device') || q.includes('smart home')) {
+        return `James is an IoT expert:\n\n• Scaled smart home platform to 60K+ devices\n• Architected secure device onboarding\n• MQTT, LoRaWAN, BLE, Zigbee, Z-Wave\n• Built integrations with Master Lock, SmartRent`;
     }
     
-    // Education
-    if (q.includes('education') || q.includes('degree') || q.includes('phd') || q.includes('ph.d') || q.includes('temple')) {
-        return `James holds a <strong>Ph.D. in Electrical & Computer Engineering</strong> from Temple University. His dissertation was on "Market-Based Multi-Agent System for Power Balance and Restoration in Power Networks," sponsored by the Office of Naval Research (ONR) and NSF. He focused on distributed systems, multi-agent AI, and autonomous systems.`;
+    if (q.includes('ai') || q.includes('machine learning') || q.includes('ml') || q.includes('agent')) {
+        return `James has PhD-level AI expertise:\n\n• Pioneered BDI agent platform for ARM Mbed OS\n• Developed SVM for HVAC fault detection (80% accuracy)\n• Built AI voice interfaces with OpenAI Whisper\n• Expert in LLM integration`;
     }
     
-    // Achievements
-    if (q.includes('achievement') || q.includes('accomplish') || q.includes('achieved') || q.includes('success') || q.includes('accomplishments')) {
-        return `Key achievements:\n\n🏆 Scaled IoT to 50K+ devices serving 45K+ residents\n🏆 Reduced 12-person team to 3 senior engineers using AI\n🏆 10x performance improvement in platform modernization\n🏆 Patent-pending smart home wireless node designs\n🏆 Built integrations with Fortune 500 (McKinsey, JLL)\n🏆 PhD-level AI expertise in BDI multi-agent systems`;
-    }
-    
-    // Contact
-    if (q.includes('contact') || q.includes('email') || q.includes('reach') || q.includes('phone') || q.includes('linkedin')) {
-        return `You can reach James at:\n\n📧 Email: rqg0717@gmail.com\n📱 Phone: +1 (215) 327-7439\n📍 Location: Naperville, IL\n🔗 GitHub: github.com/rqg0717\n🔗 LinkedIn: linkedin.com/in/rqg0717`;
-    }
-    
-    // Leadership / Management
-    if (q.includes('lead') || q.includes('manage') || q.includes('team') || q.includes('management') || q.includes('director')) {
-        return `James has extensive leadership experience:\n\n• Reduced engineering team from 10 to 3 people while delivering MORE features using AI\n• Led globally distributed teams across US and offshore (India)\n• Directed entire product lifecycles from concept to launch\n• Partnered with Fortune 500 clients (McKinsey, JLL)\n• Executive-level stakeholder alignment`;
-    }
-    
-    // IoT / Smart Home
-    if (q.includes('iot') || q.includes('smart home') || q.includes('device') || q.includes('connected') || q.includes('smart lock')) {
-        return `James is an IoT expert:\n\n• Scaled smart home platform to 50K+ connected devices\n• Architected secure device onboarding & authentication\n• Experience with MQTT, LoRaWAN, BLE, Zigbee, Z-Wave\n• Built integrations with SmartRent, Master Lock, Rently\n• Patent-pending wireless smart home node designs`;
-    }
-    
-    // AI / ML
-    if (q.includes('ai') || q.includes('machine learning') || q.includes('ml') || q.includes('agent') || q.includes('bdI') || q.includes('artificial intelligence')) {
-        return `James has PhD-level AI expertise:\n\n• Pioneered first-ever BDI (Belief-Desire-Intention) agent platform for ARM Mbed OS - Tier 3 AI\n• Developed SVM algorithms for HVAC fault detection (80% accuracy, $2M+ savings)\n• Built AI-powered voice interfaces using OpenAI Whisper\n• Research on multi-agent systems for autonomous power grids\n• Expert in LLM integration and AI-assisted development`;
-    }
-    
-    // Azure / AWS / Cloud
-    if (q.includes('azure') || q.includes('aws') || q.includes('cloud')) {
-        return `James is cloud-agnostic with deep expertise in both:\n\n<strong>Azure</strong>: Functions, AKS, Service Bus, IoT Hub, Cosmos DB, Event Hubs, Stream Analytics\n<strong>AWS</strong>: IoT Core, Lambda, SAM, DynamoDB\n\nHe architected cloud-native platforms using both, focusing on serverless and event-driven architectures.`;
-    }
-    
-    // Salary / Compensation - redirect
-    if (q.includes('salary') || q.includes('compensation') || q.includes('pay')) {
-        return "I'm not able to share information about salary or compensation. That would be something you'd need to discuss directly with James.";
-    }
-    
-    // Website
-    if (q.includes('website') || q.includes('portfolio') || q.includes('site')) {
-        return "You can learn more about James at: https://rqg0717.github.io/james-ren-portfolio";
-    }
-    
-    // Default - ask for clarification
-    return `I'd be happy to tell you more about James! You can ask me about:\n\n• His work experience and career history\n• Technical skills and expertise\n• Education and background\n• Key achievements\n• How to contact him\n\nWhat would you like to know?`;
+    return `Ask me about:\n\n• His experience & career history\n• Technical skills & expertise\n• Education & background\n• Key achievements\n• How to contact him\n\nWhat would you like to know?`;
 }
 
-// Mobile menu toggle
-function toggleMobileMenu() {
-    const navLinks = document.querySelector('.nav-links');
-    navLinks.classList.toggle('mobile-active');
+// ========================================
+// Mobile Navigation Slider
+// ========================================
+
+function toggleNavSlider() {
+    const slider = document.getElementById('nav-slider');
+    const overlay = document.getElementById('nav-slider-overlay');
+    const body = document.body;
+    
+    slider.classList.toggle('active');
+    overlay.classList.toggle('active');
+    
+    // Prevent body scroll when slider is open
+    body.style.overflow = slider.classList.contains('active') ? 'hidden' : '';
 }
 
-// Initialize
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('James Ren Portfolio loaded');
+// Close slider when clicking overlay
+document.addEventListener('click', function(e) {
+    const slider = document.getElementById('nav-slider');
+    const overlay = document.getElementById('nav-slider-overlay');
+    
+    if (overlay && overlay.classList.contains('active') && e.target === overlay) {
+        toggleNavSlider();
+    }
 });
